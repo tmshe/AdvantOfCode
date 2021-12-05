@@ -51,7 +51,7 @@ for line in hv_lines:
 for line in diag_lines: 
     x_displacement = line[2] - line[0] # x2 - x1
     y_displacement = line[3] - line[1] # y2 - y1 
-    # assert abs(x_displacement) != abs(y_displacement), "diag_line: x_step does not equal to y_step"
+    assert abs(x_displacement) == abs(y_displacement), "diag_line: x_step does not equal to y_step"
     # x and y can step in different directions 
     x_sign = int(x_displacement / abs(x_displacement))
     x_steps = list(range(0, x_displacement + 1 * x_sign, x_sign))
