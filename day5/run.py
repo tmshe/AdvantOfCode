@@ -14,22 +14,26 @@ with open("input.txt",'r') as f:
         if line[2] > grid_x_lim: grid_x_lim = line[2]
         if line[1] > grid_y_lim: grid_y_lim = line[1]
         if line[3] > grid_y_lim: grid_y_lim = line[3]
+grid_x_lim += 1
+grid_y_lim += 1
 
 # retain horizontal and vertical lines
 hv_lines = []
+diag_lines = []
 for line in raw: 
     if (line[0] == line[2]) or (line[1] == line[3]): 
         hv_lines.append(line)
+        continue 
+    x_dis = abs(line[2] - line[0])
+    y_dis = abs(line[3] - line[1])
+    if x_dis == y_dis: 
+        diag_lines.append(line)
 
 # come up with coordinates of all points 
 points_lst = []
 for line in hv_lines:
-    x1 = line[0]
-    x2 = line[2]
-    y1 = line[1]
-    y2 = line[3]
-    x_displacement = x2 - x1
-    y_displacement = y2 - y1
+    x_displacement = line[2] - line[0] # x2 - x1
+    y_displacement = line[3] - line[1] # y2 - y1
     try: 
         x_sign = int(x_displacement / abs(x_displacement))
         x_steps = list(range(0, x_displacement + 1 * x_sign, x_sign))
@@ -42,13 +46,27 @@ for line in hv_lines:
         y_steps = [0]
     for x_increment in x_steps: 
         for y_increment in y_steps: 
-            points_lst.append([x1 + x_increment, y1 + y_increment])
+            points_lst.append([line[0] + x_increment, line[1] + y_increment]) # x1 + x_inc, y1 + y_inc
 
+for line in diag_lines: 
+    x_displacement = line[2] - line[0] # x2 - x1
+    y_displacement = line[3] - line[1] # y2 - y1 
+    # assert abs(x_displacement) != abs(y_displacement), "diag_line: x_step does not equal to y_step"
+    # x and y can step in different directions 
+    x_sign = int(x_displacement / abs(x_displacement))
+    x_steps = list(range(0, x_displacement + 1 * x_sign, x_sign))
+    y_sign = int(y_displacement / abs(y_displacement))
+    y_steps = list(range(0, y_displacement + 1 * y_sign, y_sign))
+    assert len(x_steps) == len(y_steps) 
+    for idx in range(0,len(x_steps)): 
+        x_increment = x_steps[idx]
+        y_increment = y_steps[idx]
+        points_lst.append([line[0] + x_increment, line[1] + y_increment]) 
 
 # create map 
 map = []   
-for i in range(0, (grid_y_lim + 1)): 
-    map.append([0] * (grid_x_lim + 1)) 
+for i in range(0, (grid_y_lim)): 
+    map.append([0] * (grid_x_lim)) 
 # add lines to map
 for coord in points_lst: 
     map[coord[1]][coord[0]] += 1
